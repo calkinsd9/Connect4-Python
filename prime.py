@@ -96,23 +96,310 @@ def userMove(userInput, gameBoard):
     
     gameBoard[h][iUserInput] = PLAYERVAL
     
-def computerMove(gameBoard):
+def computerCanWinAt(gameBoard, connect):
+    width = len(gameBoard[0])
+    height = len(gameBoard)
+    
+    for h in range(height):
+        for w in range(width):
+            if (gameBoard[h][w] != PLAYERVAL):
+
+                # check the next [connect] spaces. stop if you hit the end of the board or a playervalue
+                # count the number of spaces taken
+                # if the compvals == connect -1, then check that the space underneath the empty space is the bottom or taken
+                # if it is, return the position
+                
+                #check horizontal
+                taken = 1 if gameBoard[h][w] == COMPVAL else 0
+                spaces = 1
+                for i in range(w+1, width):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (gameBoard[h][i] == PLAYERVAL):
+                        break
+                    if (gameBoard[h][i] == COMPVAL):
+                        taken += 1
+                    
+                if (taken == connect-1):
+                    for i in range(w+1, width):
+                        if gameBoard[h][i] == EMPTYVAL:
+                            break
+                    if (h == height - 1) or ((h+1)<height and (gameBoard[h+1][i] != EMPTYVAL)):
+                        return i
+                    
+                #check vertical
+                taken = 1 if gameBoard[h][w] == COMPVAL else 0
+                spaces = 1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (gameBoard[j][w] == PLAYERVAL):
+                        break
+                    if (gameBoard[j][w] == COMPVAL):
+                        taken += 1
+
+                if (taken == connect-1):
+                    for j in range(h+1, height):
+                        if gameBoard[j][w] == EMPTYVAL:
+                            break
+                    if (h == height - 1) or ((j+1<height) and gameBoard[j+1][w] != EMPTYVAL):
+                        return w
+                    
+                #check diagonal left
+                taken = 1 if gameBoard[h][w] == COMPVAL else 0
+                spaces = 1
+                i = w-1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (i<0):
+                        break
+                    if (gameBoard[j][i] == PLAYERVAL):
+                        break
+                    if (gameBoard[j][i] == COMPVAL):
+                        taken += 1
+                    i -= 1
+
+                if (taken == connect-1):
+                    i = w-1
+                    for j in range(h+1, height):
+                        if (gameBoard[j][i] == EMPTYVAL):
+                            break
+                        i -= 1
+                    if (j == height - 1) or ((j+1<height) and gameBoard[j+1][i] != EMPTYVAL):
+                        return i
+
+                    
+                #check diagonal right
+                taken = 1 if gameBoard[h][w] == COMPVAL else 0
+                spaces = 1
+                i = w+1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (i >= width):
+                        break
+                    if (gameBoard[j][i] == PLAYERVAL):
+                        break
+                    if (gameBoard[j][i] == COMPVAL):
+                        taken += 1
+                    i += 1
+
+                if (taken == connect-1):
+                    i = w+1
+                    for j in range(h+1, height):
+                        if (gameBoard[j][i] == EMPTYVAL):
+                            break
+                        i -= 1
+                    if (j == height - 1) or ((j+1<height) and gameBoard[j+1][i] != EMPTYVAL):
+                        return i
+                    
+                    
+    return -1
+    
+def userCanWinAt(gameBoard, connect):
+    width = len(gameBoard[0])
+    height = len(gameBoard)
+    
+    for h in range(height):
+        for w in range(width):
+            #debug
+            print('usercanwin iteration ' + str(h) + str(w) + 'VAL: ' +str(gameBoard[h][w]))
+            if (gameBoard[h][w] != COMPVAL):
+
+                # check the next [connect] spaces. stop if you hit the end of the board or a playervalue
+                # count the number of spaces taken
+                # if the compvals == connect -1, then check that the space underneath the empty space is the bottom or taken
+                # if it is, return the position
+                
+                #check horizontal
+                #debug
+                print('checking horizontal')
+                taken = 1 if gameBoard[h][w] == PLAYERVAL else 0
+                spaces = 1
+                for i in range(w+1, width):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (gameBoard[h][i] == COMPVAL):
+                        break
+                    if (gameBoard[h][i] == PLAYERVAL):
+                        taken += 1
+                    
+                if (taken == connect-1):
+                    #debug
+                    print('win detected')
+                    for i in range(w, width):
+                        if gameBoard[h][i] == EMPTYVAL:
+                            break
+                    if (h == height - 1) or ((h+1)<height and (gameBoard[h+1][i] != EMPTYVAL)):
+                        #debug
+                        print('at gameBoard' + str(h) + str(i))
+                        return i
+                    
+                #check vertical
+                #debug
+                print('checking vertical')
+                taken = 1 if gameBoard[h][w] == PLAYERVAL else 0
+                spaces = 1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (gameBoard[j][w] == COMPVAL):
+                        break
+                    if (gameBoard[j][w] == PLAYERVAL):
+                        taken += 1
+
+                if (taken == connect-1):
+                    #debug
+                    print('win detected')
+                    for j in range(h, height):
+                        #debug
+                        print('jw ' + str(j) +str(w) + ' = ' + str(gameBoard[j][w]))
+                        if gameBoard[j][w] == EMPTYVAL:
+                            #debug
+                            print('empty val at' + str(j) + str(w))
+                            break
+                    if (j == height - 1) or ((j+1<height) and gameBoard[j+1][w] != EMPTYVAL):
+                        #debug
+                        print('at gameBoard' + str(j) + str(w))
+                        return w
+                    
+                #check diagonal left
+                #debug
+                print('checking diagonal left')
+                taken = 1 if gameBoard[h][w] == PLAYERVAL else 0
+                spaces = 1
+                i = w-1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (i<0):
+                        break
+                    if (gameBoard[j][i] == COMPVAL):
+                        break
+                    if (gameBoard[j][i] == PLAYERVAL):
+                        taken += 1
+                    i -= 1
+
+                if (taken == connect-1):
+                    #debug
+                    print('win detected')
+                    i = w-1
+                    for j in range(h, height):
+                        #debug
+                        print('ji ' + str(j) +str(i) + ' = ' + str(gameBoard[j][i]))
+                        if (gameBoard[j][i] == EMPTYVAL):
+                            #debug
+                            print('empty val at' + str(j) + str(i))
+                            break
+                        i -= 1
+                    if (j == height - 1) or ((j+1<height) and gameBoard[j+1][i] != EMPTYVAL):
+                        #debug
+                        print('at gameBoard' + str(j) + str(i))
+                        return i
+
+                    
+                #check diagonal right
+                #debug
+                print('checking diagonal right')
+                taken = 1 if gameBoard[h][w] == PLAYERVAL else 0
+                spaces = 1
+                i = w+1
+                for j in range(h+1, height):
+                    spaces += 1
+                    if spaces > connect:
+                        break
+                    if (i >= width):
+                        break
+                    if (gameBoard[j][i] == COMPVAL):
+                        break
+                    if (gameBoard[j][i] == PLAYERVAL):
+                        taken += 1
+                    i += 1
+
+                if (taken == connect-1):
+                    #debug
+                    print('win detected')
+                    i = w+1
+                    for j in range(h, height):
+                        #debug
+                        print('ji ' + str(j) +str(i) + ' = ' + str(gameBoard[j][i]))
+                        if (gameBoard[j][i] == EMPTYVAL):
+                            #debug
+                            print('empty val at' + str(j) + str(i))
+                            break
+                        i -= 1
+                    if (j == height - 1) or ((j+1<height) and gameBoard[j+1][i] != EMPTYVAL):
+                        #debug
+                        print('at gameBoard' + str(j) + str(i))
+                        return i
+                    
+                    
+    return -1
+
+    
+def computerMove(gameBoard, connect):
     height = len(gameBoard)
     width = len(gameBoard[0])
     
-    move = randint(1,width)
+    #AI logic:
+    # 1) If I am about to win, move to win
+    # 2) If the user needs one move to win, stop her from winning.
+    # 3) If neither of the above conditions are met, then
+    # 4) If the middle center space on the bottom row isn't taken yet, take it. If it is taken
+    # 5) Move randomly
+
+    # 1) Move to win
+    #   a) For each space
+    #   b) if that space is blank or mine
+    #   c) do a win check in all directions but allowing for blank tiles
+    #   d) for each successful win check scenario:
+    #   e) check if the space below the win space is the bottom of the board or not empty
+    #   f) if the space below is filled or the bottom, take the win
+    
+    compMove = computerCanWinAt(gameBoard, connect)
     #debug
-    print('Comp move: ' + str(move))
-    while not isValidMove(gameBoard, str(move)):
-        move = randint(1,width)
+    print('compMove after computerCanWinAt is ' + str(compMove))
+    
+    if compMove == -1:
+        compMove = userCanWinAt(gameBoard, connect)
+        
     #debug
-    print('Comp move: ' + str(move))
+    print('compMove after userCanWinAt is ' + str(compMove))    
+
+    if compMove == -1:
+        middleOfBoard = (width-1) // 2
+        #debug
+        print('middleOfBoard is ' + str(middleOfBoard))
+        print('gameBoard[' + str(height-1) + '][' + str(middleOfBoard) + '] is ' + str(gameBoard[height-1][middleOfBoard]))
+        if (gameBoard[height-1][middleOfBoard] == EMPTYVAL):
+            compMove = middleOfBoard
+            
+    #debug
+    print('compMove after middleOfBoard is ' + str(compMove))
+    
+    if compMove == -1:
+        compMove = randint(1,width)
+        while not isValidMove(gameBoard, str(compMove)):
+            compMove = randint(1,width)
+        compMove -= 1
+        
+        #debug
+        print('random compMove is ' + str(compMove))
+    
     for h in range(height):
-        if (gameBoard[h][move-1] != EMPTYVAL):
+        if (gameBoard[h][compMove] != EMPTYVAL):
             h -= 1
             break
             
-    gameBoard[h][move-1] = COMPVAL
+    gameBoard[h][compMove] = COMPVAL
     
     
 def checkWin(gameBoard, connect, value):
@@ -317,7 +604,7 @@ while userInput != 'n':
     userWon = checkWin(gameBoard, connect, PLAYERVAL)
     
     if not isBoardFull(gameBoard) and not userWon:
-        computerMove(gameBoard)
+        computerMove(gameBoard, connect)
         computerWon = checkWin(gameBoard, connect, COMPVAL)
         
     if userWon:
